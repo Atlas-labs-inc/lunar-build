@@ -1,0 +1,449 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_permission_manager",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "current_user_count",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAllUsers",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "pfp_link",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "activity_karma",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "main_wallet",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "operator_wallet",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "is_moderator",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "bio",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct User[]",
+        "name": "_users",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "username",
+        "type": "string"
+      }
+    ],
+    "name": "getUser",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "pfp_link",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "activity_karma",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "main_wallet",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "operator_wallet",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "is_moderator",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "bio",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct User",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "main_address",
+        "type": "address"
+      }
+    ],
+    "name": "getUserFromMainAddress",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "pfp_link",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "activity_karma",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "main_wallet",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "operator_wallet",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "is_moderator",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "bio",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct User",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "page",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "total",
+        "type": "uint256"
+      }
+    ],
+    "name": "getUsersPaginated",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "pfp_link",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "activity_karma",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "main_wallet",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "operator_wallet",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "is_moderator",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "bio",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct User[]",
+        "name": "_users",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "username",
+        "type": "string"
+      }
+    ],
+    "name": "incrementKarma",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "username",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "potential_user_address",
+        "type": "address"
+      }
+    ],
+    "name": "isAccountOperator",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "username",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "potential_user_address",
+        "type": "address"
+      }
+    ],
+    "name": "isAccountOwner",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "operator_wallet",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "pfp_link",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "bio",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct PartialUser",
+        "name": "user",
+        "type": "tuple"
+      }
+    ],
+    "name": "newUser",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "permission_manager",
+    "outputs": [
+      {
+        "internalType": "contract Permission",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "username",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "bio",
+        "type": "string"
+      }
+    ],
+    "name": "updateBio",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "username",
+        "type": "string"
+      },
+      {
+        "internalType": "bool",
+        "name": "update",
+        "type": "bool"
+      }
+    ],
+    "name": "updateModeratorStatus",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "username",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "new_operator",
+        "type": "address"
+      }
+    ],
+    "name": "updateOperatorAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "username",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "new_pfp_link",
+        "type": "string"
+      }
+    ],
+    "name": "updateProfilePicture",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "username",
+        "type": "string"
+      }
+    ],
+    "name": "userExists",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
