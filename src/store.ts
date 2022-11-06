@@ -44,6 +44,12 @@ type Store = {
   addMessage: (message: Message) => void;
   wasConnected: boolean;
   setWasConnected: (wasConnected: boolean) => void;
+  signer: any;
+  setSigner: (signer: any) => void;
+  providerT: any;
+  setProviderT: (provider: any) => void;
+  operatorSigner: any;
+  setOperatorSigner: (signer: any) => void;
 }
 
 export const useStore = create<Store>((set) => ({
@@ -117,4 +123,10 @@ export const useStore = create<Store>((set) => ({
   addMessage: (message) => set((state) => ({ currentChannel: { name: state.currentChannel.name, messages: [...state.currentChannel.messages, message] } })),
   wasConnected: false,
   setWasConnected: (wasConnected) => set({ wasConnected: wasConnected }),
+  signer: null,
+  setSigner: (signer) => set({ signer: signer }),
+  providerT: null,
+  setProviderT: (providerT) => set({ providerT: providerT }),
+  operatorSigner: null,
+  setOperatorSigner: (operatorSigner) => set({ operatorSigner: operatorSigner }),
 }));

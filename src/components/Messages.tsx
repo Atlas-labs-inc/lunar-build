@@ -133,20 +133,6 @@ import {
                 }}
               />
             </Flex>
-            <Flex
-              _hover={{
-                bg: '#3f414c'
-              }}
-              borderRadius='5px'
-              p='.5rem'
-              mr='1rem'
-            >
-              <BsFillEmojiLaughingFill
-                color='#8E9297'
-                fontSize={id === hoveredMessage ? showButtons : '0rem'}
-                onClick={() => {}}
-              />
-            </Flex>
           </Flex>
         </Flex>
       )

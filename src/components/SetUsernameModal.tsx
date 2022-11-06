@@ -28,10 +28,11 @@ export const SetUsernameModal = () => {
   const setContract = useStore((state) => state.setContract)
   const [OPAddressUpdated, setOPAddressUpdated] = useState(false)
   const [loading, setLoading] = useState(false)
+  const signer = useStore((state) => state.signer)  
   
     // Note that we still need to get the Metamask signer
-    const signer = (new Web3Provider(ethereum)).getSigner();
-    
+    // const signer = (new Web3Provider(ethereum)).getSigner();
+
     const contract = new Contract(
         process.env.NEXT_PUBLIC_PROFILE_CONTRACT,
         profileABI,

@@ -9,10 +9,24 @@ import { Flex, Heading, useDisclosure, Button, Modal, ModalOverlay, ModalContent
   Input,} from '@chakra-ui/react'
 import { useStore } from '../store'
 import React, { useState } from 'react';
+import { ethers } from 'ethers'
+import channelManagerAbi from '../abis/channel_manager.json'
+
 
 export const CreateChannelModal = () => {
   const showCreateChannel = useStore((state) => state.showCreateChannel)
   const setShowCreateChannel = useStore((state) => state.setShowCreateChannel)
+  const [message, setMessage] = useState('')
+  const operatorSigner = useStore((state) => state.operatorSigner)
+
+  const channelManager = new ethers.Contract(process.env.NEXT_PUBLIC_CHANNEL_MANAGER_CONTRACT, channelManagerAbi, operatorSigner)
+
+  const createChannel = async (channel) => {
+    console.log(operatorSigner)
+    console.log('creating channel: ' + channel)
+    console.log(await channelManager.createChannel(channel))
+  }
+
 
 if (showCreateChannel) {
   return (
@@ -24,9 +38,14 @@ if (showCreateChannel) {
         <Heading mt='20px' color={'white'} fontWeight={'bold'} fontSize={'20px'}>Create a Channel</Heading>
         <Flex direction={'column'} w='80%' alignItems='left' mt='30px'>
           <Heading fontSize='15px' mb={'10px'}>Channel Name</Heading>
-          <Input variant='filled' placeholder='e.g welcome'></Input>
+          <Input onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              createChannel(message)
+              setShowCreateChannel(false)
+            }
+          }} variant='filled' placeholder='e.g welcome'></Input>
         </Flex>
-        <Button mt='20px' w='80%' className="btn" bg='#347BE5' type="button" onClick={() => setShowCreateChannel(false)}>Create Channel</Button>
+        <Button mt='20px' w='80%' className="btn" bg='#347BE5' type="button" onClick={() => createChannel(message)}>Create Channel</Button>
       </Flex>
     </Flex>
 

@@ -23,14 +23,15 @@ export const ProfileModal = () => {
 
 
   const changeSwitch = async () => {
-    setSwitchValue(!switchValue)
     console.log(switchValue)
     console.log(currentProfile.name)
     console.log(await contract.updateModeratorStatus(currentProfile.name, switchValue))
+    setSwitchValue(!switchValue)
   }
 
   const getAdminStatus = async () => {
     const data = await contract.getUser(currentUser.name)
+    ///data.is_moderator
     if (data.is_moderator){
       setIsMod(true)
     } else {{
@@ -40,18 +41,26 @@ export const ProfileModal = () => {
 
   const AdminToggle = () => {
     getAdminStatus()
-    if (isMod){
-      return(
-        <Flex align={'center'} justify={'center'} direction={'column'} position={'absolute'} mr='300px' mt='20px' w={'70px'} h='50px'>
+    if(isMod){
+      if (currentProfile.role === 'admin'){
+        return(
+          <Flex align={'center'} justify={'center'} direction={'column'} position={'absolute'} mr='300px' mt='20px' w={'70px'} h='50px'>
+            <Heading mb='8px' color='gray' fontSize={'12px'}>Admin</Heading>
+            <Switch defaultChecked onChange={() => changeSwitch()} colorScheme={'green'} size='lg' />
+          </Flex>
+        )
+      } else {
+        return(
+          <Flex align={'center'} justify={'center'} direction={'column'} position={'absolute'} mr='300px' mt='20px' w={'70px'} h='50px'>
           <Heading mb='8px' color='gray' fontSize={'12px'}>Admin</Heading>
-          {currentProfile.role === 'admin' ? <Switch defaultChecked onChange={() => changeSwitch()} colorScheme={'green'} size='lg' /> : <Switch  onChange={() => changeSwitch()} colorScheme={'green'} size='lg' />}
+          <Switch onChange={() => changeSwitch()} colorScheme={'green'} size='lg' />
         </Flex>
-      )
+        )
+      }
     } else {
-      return(
-        null
-      )
+      return(null)
     }
+    
 
 
   }

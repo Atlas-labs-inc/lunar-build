@@ -16,7 +16,7 @@ const sendFunds = async (address: string, amount: BigNumber) => {
     const depositHandle1 = await wallet.deposit({
       to: wallet.address,
       token: utils.ETH_ADDRESS,
-      amount: ethers.utils.parseEther("1"),
+      amount: ethers.utils.parseEther("0.2"),
     });
     // Wait until the deposit is processed
     await depositHandle1.wait();
@@ -38,7 +38,7 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
   } = req
   switch (method) {
     case 'POST':
-      await sendFunds(main_address as string, ethers.utils.parseEther("0.01"));
+      await sendFunds(main_address as string, ethers.utils.parseEther("0.005"));
       res.status(200).json({"status": "success"})
       break
     default:

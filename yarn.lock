@@ -1328,6 +1328,10 @@
   dependencies:
     multiformats "^9.5.4"
 
+"@metamask/detect-provider@github:metamask/detect-provider":
+  version "2.0.0"
+  resolved "https://codeload.github.com/metamask/detect-provider/tar.gz/44f6ff18b90dd6aa9c6cdd300a4383de95ef2d48"
+
 "@metamask/eth-sig-util@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@metamask/eth-sig-util/-/eth-sig-util-5.0.0.tgz#106364008029d30a231668a7133d6d0dae60adf6"
@@ -2818,6 +2822,11 @@ metamask-react@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/metamask-react/-/metamask-react-2.4.0.tgz#5df0476a6df8fa6959c5253f2ee67c274453128d"
   integrity sha512-dQDu8aop89iZjvjldCXnEEASgbACCeyBeylqVTPgqVurHIFB666NTNfteiQstzVYg0k3vyup+FNgqNF9g2/0WA==
+
+metamask@^0.0.1-security:
+  version "0.0.1-security"
+  resolved "https://registry.yarnpkg.com/metamask/-/metamask-0.0.1-security.tgz#c2bf0825bb6ce865ac1daad5bfaad792b28e4c30"
+  integrity sha512-19IFlzWLWGnVII4uArg1m6rGw1CkA7QYtpsc9IpHekcaAz0oZ9sUuB89MseBeE0WAfqGN74NrnYiI9XPVx0AmQ==
 
 mime-db@1.52.0:
   version "1.52.0"

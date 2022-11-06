@@ -8,7 +8,7 @@ import { Flex, Heading, useDisclosure, Button, Modal, ModalOverlay, ModalContent
   AlertDialogOverlay,
   Input,} from '@chakra-ui/react'
 import { useStore } from '../store'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMetaMask } from 'metamask-react'
 import { statSync } from 'fs';
 import cookies from '../cookies';
@@ -36,7 +36,9 @@ export const WalletSetupModal = () => {
   const setWasConnected = useStore((state) => state.setWasConnected)
   const { addChain } = useMetaMask();
   const [chainAdded, setChainAdded] = useState(false)
-
+  const setSigner = useStore((state) => state.setSigner)
+  const setOperatorSigner = useStore((state) => state.setOperatorSigner)
+  const signer = useStore((state) => state.signer)
   const { status, connect, account, chainId, ethereum } = useMetaMask();
   
 
@@ -47,7 +49,7 @@ export const WalletSetupModal = () => {
     const ChainNetworkParams = {
       chainId: "0x10E",
       chainName: "Lunar Chain",
-      rpcUrls: ["https://ff94-44-207-2-46.ngrok.io/"],
+      rpcUrls: ["https://a4f4-3-87-1-255.ngrok.io/"],
       nativeCurrency: {
         name: "ETH",
         symbol: "ETH",
@@ -76,6 +78,14 @@ export const WalletSetupModal = () => {
     const wallet = new Wallet(privateKey, provider, new ethers.providers.JsonRpcProvider(process.env.PL1));
     const operatorBalance = await wallet.getBalance()
     const userBalance = await provider.getBalance(account)
+    const signer = await (new Web3Provider(ethereum)).getSigner();
+    const operatorSigner = await (new Wallet(
+      cookies.get('operatorKey'),
+      new Provider(process.env.NEXT_PUBLIC_Pl2),
+      new ethers.providers.JsonRpcProvider(process.env.PL1)
+    ))
+    setSigner(signer)
+    setOperatorSigner(operatorSigner)
 
     setOPAddress(wallet.address)
 
@@ -120,7 +130,6 @@ export const WalletSetupModal = () => {
       console.log("Metamask Connected")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
       await startBalanceCheck()
       setWasConnected(true)
-      console.log("NAME" + currentUser.name)
       setShowModal1(false)
       if (currentUser.name === null || currentUser.name === undefined) { //user has not set username
         setShowSetUsernameModal(true)
@@ -138,7 +147,7 @@ if (showModal1) {
     <Flex direction={'column'} zIndex={1} position={'absolute'}  w='100%' h='100%' justify={'center'}>
       <Flex position={'absolute'} w='100%' h='100%' bg='black' backdropBlur={'100%'} blur={'100%'} opacity={'60%'}></Flex>
       <Flex zIndex={1} align={'center'}  direction='column' margin={'0 auto'} w='420px' h='360px' borderRadius={'10px'} bg='#313131'>
-        <Image mt='20px' w={'200px'} src={'https://i.ibb.co/LpYP75g/lunar-logo-1.png'}></Image>
+        <Image mt='20px' w={'200px'} src={'https://i.ibb.co/PwbLCH8/lunar-logo-2-1.png'}></Image>
         <Heading mt='0px' color={'#B9BBBE'} fontWeight={'medium'} fontSize={'15px'}>Welcome to</Heading>
         <Heading mt='0px' color={'white'} fontWeight={'bold'} fontSize={'45px'}>Lunar</Heading>
         <Text mt='10px' textAlign={'center'} w='80%' color={'#C4C4C4'} fontWeight={'medium'} fontSize={'13px'}>To get started, you'll need to set up your wallet.</Text>
