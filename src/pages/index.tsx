@@ -75,7 +75,7 @@ const Home = () => {
               if (message.message === '') {
                 return null
               }
-              console.log(message)
+              // console.log(message)
               const userDetails = serverMembers.find((member) => member.name === message.username)
               return {
                 id: message.id.toString(),
@@ -90,7 +90,7 @@ const Home = () => {
               }
             }).filter((message) => message !== null)
 
-            console.log(parsedMessages)
+            // console.log(parsedMessages)
             setCurrentChannel({
               name: channelName,
               messages: parsedMessages

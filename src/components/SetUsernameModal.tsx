@@ -10,7 +10,7 @@ import { Flex, Heading, useDisclosure, Button,
   Spinner
 } from '@chakra-ui/react'
 import { useStore } from '../store'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Contract, Web3Provider, Provider, Wallet } from "zksync-web3";
 import { useMetaMask } from 'metamask-react'
 import profileABI from '../abis/profile.json'
@@ -25,40 +25,32 @@ export const SetUsernameModal = () => {
   const setNewUserStatus = useStore((state) => state.setNewUserStatus)
   const currentUser = useStore((state) => state.currentUser)
   const setCurrentUser = useStore((state) => state.setCurrentUser)
-  const setContract = useStore((state) => state.setContract)
   const [OPAddressUpdated, setOPAddressUpdated] = useState(false)
   const [loading, setLoading] = useState(false)
-  const signer = useStore((state) => state.signer)  
+  const signer = useStore((state) => state.signer)
+  const [contract, setContract] = useState(null)
+  const [opContract, setOpContract] = useState(null)
+  const [prov, setProv] = useState(null)
+  const [opWallet, setOpWallet] = useState(null)
+  const [executed, setExecuted] = useState(false)
   
     // Note that we still need to get the Metamask signer
     // const signer = (new Web3Provider(ethereum)).getSigner();
 
-    const contract = new Contract(
-        process.env.NEXT_PUBLIC_PROFILE_CONTRACT,
-        profileABI,
-        signer
-    );
-    const provider = new Provider(process.env.NEXT_PUBLIC_Pl2);
-    const operatorWallet = new Wallet(cookies.get('operatorKey'), provider);
-    console.log(operatorWallet)
-    const OPcontract = new Contract(
-      process.env.NEXT_PUBLIC_PROFILE_CONTRACT,
-      profileABI,
-      operatorWallet
-    );
 
 
-  const checkOPAddress = async () => {
+
+  const checkOPAddress = async (contract, opWallet) => {
     console.log("Checking OPAddress...")
     
     const userData = await contract.getUserFromMainAddress(account) //check if user exists
     const onChainOPA = userData.operator_wallet
     console.log("Chain OPA = " + onChainOPA)
-    console.log("User OPA = " + operatorWallet.address)
-    if (onChainOPA != operatorWallet.address) {
+    console.log("User OPA = " + opWallet.address)
+    if (onChainOPA != opWallet.address) {
       console.log("OPAddress not up to date, updating...")
       try{
-        console.log(await contract.updateOperatorAddress(userData.username, operatorWallet.address))
+        console.log(await contract.updateOperatorAddress(userData.username, opWallet.address))
       } catch(error){
         console.log(error)
       }
@@ -72,7 +64,7 @@ export const SetUsernameModal = () => {
         contract.newUser({
           username: username,
           pfp_link: "https://avatars.githubusercontent.com/u/35270686?s=280&v=4",
-          operator_wallet: operatorWallet.address,
+          operator_wallet: opWallet.address,
           bio: "I'm a new user!",
         }).then(tx => {
           tx.wait().then(receipt => {
@@ -80,7 +72,7 @@ export const SetUsernameModal = () => {
             setCurrentUser({
               name: username,
               pfp: "https://avatars.githubusercontent.com/u/35270686?s=280&v=4",
-              operatorWallet: operatorWallet.address,
+              operatorWallet: opWallet.address,
               role: "member",
               bio: "I'm a new user!"
             })
@@ -89,43 +81,74 @@ export const SetUsernameModal = () => {
             console.log('account created!')
           })
         });
-        checkIfNewUser()
+        // checkIfNewUser()
     } catch (error) {
-        console.log('Error creating user...');
+        console.log(error);
         setLoading(false)
     }
   }
 
 
-  const checkIfNewUser = async () => {
+  const checkIfNewUser = async (contract, operatorWallet) => {
     try {
         console.log('checking if user exists...!')
-        const userData = await contract.getUserFromMainAddress(account) //check if user exists
-        if (userData[0] == '') {
-          console.log('new user detected')
-        } else {
-          var adminTemp = "member"
-          if (userData[5] == true) {
-            adminTemp = "admin"
+        console.log(contract)
+        console.log(account)
+        // const userData = await contract.getUserFromMainAddress(account) //check if user exists
+        // console.log(userData)
+        contract.getUserFromMainAddress(account).then((userData) => {
+          console.log('userData:')
+          console.log(userData)
+    
+          if (userData[0] == '') {
+            console.log('new user detected')
+          } else {
+            // var adminTemp = "member"
+            // if (userData[5] == true) {
+            //   adminTemp = "admin"
+            // }
+            setCurrentUser({
+              name: userData[0],
+              pfp: userData[1],
+              role: userData[5],
+              bio: userData[6],
+            })
+            setNewUserStatus(false)
+            // setContract(OPcontract)
+            if(!OPAddressUpdated){
+              checkOPAddress(contract, operatorWallet)
+            }
+            setShowSetUsernameModal(false)
           }
-          setCurrentUser({
-            name: userData[0],
-            pfp: userData[1],
-            role: userData[5],
-            bio: userData[6],
-          })
-          setNewUserStatus(false)
-          setContract(OPcontract)
-          if(!OPAddressUpdated){
-            checkOPAddress()
-          }
-        }
+        })
     } catch (error) {
-        console.log('Error checking user...');
+        console.log(error);
   }
   }
 
-  checkIfNewUser()
+  useEffect(() => {
+    if (signer && !executed) {
+      const c = new Contract(
+        process.env.NEXT_PUBLIC_PROFILE_CONTRACT,
+        profileABI,
+        signer
+      );
+      setContract(c)
+      const provider = new Provider(process.env.NEXT_PUBLIC_Pl2);
+      const operatorWallet = new Wallet(cookies.get('operatorKey'), provider);
+      // console.log(operatorWallet)
+      const op = new Contract(
+        process.env.NEXT_PUBLIC_PROFILE_CONTRACT,
+        profileABI,
+        operatorWallet
+      );
+      setOpContract(op)
+      setProv(provider)
+      setOpWallet(operatorWallet)
+      checkIfNewUser(c, operatorWallet)
+      setExecuted(true)
+    }
+  }, [currentUser, signer])
 
 if (showSetUsernameModal) {
   return (

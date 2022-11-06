@@ -40,6 +40,7 @@ export const WalletSetupModal = () => {
   const setOperatorSigner = useStore((state) => state.setOperatorSigner)
   const signer = useStore((state) => state.signer)
   const { status, connect, account, chainId, ethereum } = useMetaMask();
+  const [loading, setLoading] = useState(false)
   
 
   const provider = new Provider(process.env.NEXT_PUBLIC_Pl2);
@@ -49,7 +50,8 @@ export const WalletSetupModal = () => {
     const ChainNetworkParams = {
       chainId: "0x10E",
       chainName: "Lunar Chain",
-      rpcUrls: ["https://a4f4-3-87-1-255.ngrok.io/"],
+      rpcUrls: [process.env.NEXT_PUBLIC_Pl2],
+      
       nativeCurrency: {
         name: "ETH",
         symbol: "ETH",
@@ -71,41 +73,45 @@ export const WalletSetupModal = () => {
     }
   }
 
-  checkChainID()
+  //checkChainID()
 
   const checkBalance = async (privateKey) => {
     const provider = new Provider(process.env.NEXT_PUBLIC_Pl2)
-    const wallet = new Wallet(privateKey, provider, new ethers.providers.JsonRpcProvider(process.env.PL1));
-    const operatorBalance = await wallet.getBalance()
+    const operatorWallet = new Wallet(privateKey, provider, new ethers.providers.JsonRpcProvider(process.env.PL1));
+    const operatorBalance = await operatorWallet.getBalance()
     const userBalance = await provider.getBalance(account)
     const signer = await (new Web3Provider(ethereum)).getSigner();
-    const operatorSigner = await (new Wallet(
-      cookies.get('operatorKey'),
-      new Provider(process.env.NEXT_PUBLIC_Pl2),
-      new ethers.providers.JsonRpcProvider(process.env.PL1)
-    ))
+
     setSigner(signer)
-    setOperatorSigner(operatorSigner)
+    setOperatorSigner(operatorWallet)
 
-    setOPAddress(wallet.address)
+    setOPAddress(operatorWallet.address)
 
-    console.log("Operator Balance: " + operatorBalance)
-    console.log("User Balance: " + userBalance)
+    // console.log("Operator Balance: " + operatorBalance)
+    // console.log("User Balance: " + userBalance)
 
     if ((await provider.getBalance(account)).lt(ethers.utils.parseEther("0.01"))) {   //Check if Metsmask has at least 0.01 ETH
       console.log("(Metamask) requesting funds... " + account)
-      console.log(await fundWallet(account))
+      fundWallet(account).then(val => {
+        console.log(val)
+        // console.log("metamask Balance after funding: " + userBalance)
+
+        if (operatorBalance.lt(ethers.utils.parseEther("0.01"))) {   //Check if operator has at least 0.01 ETH
+          console.log("(Operator) requesting funds... " + operatorWallet.address)
+          fundWallet(operatorWallet.address).then(val => {
+            console.log("Operator Balance: " + operatorBalance)
+            setShowModal1(false)
+          })
+        } else{
+          console.log(operatorWallet.address +" - Operator wallet above 0.01 ETH")
+          setShowModal1(false)
+        }
+      })
     } else{
       console.log(account + " - Metamask wallet above 0.01 ETH ")
+      setShowModal1(false)
     }
 
-    if (operatorBalance.lt(ethers.utils.parseEther("0.01"))) {   //Check if operator has at least 0.01 ETH
-      console.log("(Operator) requesting funds... " + wallet.address)
-      await fundWallet(wallet.address)
-    } else{
-      console.log(wallet.address +" - Operator wallet above 0.01 ETH")
-    }
-  
     return true
   }
 
@@ -114,33 +120,32 @@ export const WalletSetupModal = () => {
   }
 
   const startBalanceCheck = async () => {
-    if (!executed) {
-        setExecuted(true)
-        if (status === 'connected') {
-          if (cookies.get('operatorKey') === undefined) {
-            cookies.set('operatorKey', "0x"+crypto.randomBytes(32).toString('hex'), { path: '/' })
-          }
-          checkBalance(cookies.get('operatorKey'))
-        }        
+
+      if (cookies.get('operatorKey') === undefined) {
+        cookies.set('operatorKey', "0x"+crypto.randomBytes(32).toString('hex'), { path: '/' })
       }
+      checkBalance(cookies.get('operatorKey'))
   }
 
   const walletConnected = async () => {
     if (status === 'connected') { //wallet connected
       console.log("Metamask Connected")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-      await startBalanceCheck()
-      setWasConnected(true)
-      setShowModal1(false)
-      if (currentUser.name === null || currentUser.name === undefined) { //user has not set username
-        setShowSetUsernameModal(true)
-      }
+      startBalanceCheck().then(val => {
+        setLoading(true)
+        if (currentUser.name === null || currentUser.name === undefined) { //user has not set username
+          setShowSetUsernameModal(true)
+        }
+      })
+
     } else {
       setShowModal1(true) //show connect wallet button if they arent connected
     }
   }
 
 
-  walletConnected() 
+  useEffect(() => {
+    walletConnected() 
+  }, [status])
 
 if (showModal1) {
   return (
@@ -151,8 +156,8 @@ if (showModal1) {
         <Heading mt='0px' color={'#B9BBBE'} fontWeight={'medium'} fontSize={'15px'}>Welcome to</Heading>
         <Heading mt='0px' color={'white'} fontWeight={'bold'} fontSize={'45px'}>Lunar</Heading>
         <Text mt='10px' textAlign={'center'} w='80%' color={'#C4C4C4'} fontWeight={'medium'} fontSize={'13px'}>To get started, you'll need to set up your wallet.</Text>
-        {(chainId != '0x10e') && <Button disabled mt='25px' w='80%' className="btn" bg='gray' type="button" onClick={connect}>Connect Metamask</Button>}
-        {(chainId === '0x10e') && <Button mt='25px' w='80%' className="btn" bg='#347BE5' type="button" onClick={connect}>Connect Metamask</Button>}
+        {/* {(chainId != '0x10e') && <Button disabled mt='25px' w='80%' className="btn" bg='gray' type="button" onClick={connect}>Connect Metamask</Button>} */}
+        {(chainId === '0x10e') && <Button mt='25px' w='80%' className="btn" bg='#347BE5' type="button" onClick={connect} isLoading={loading}>Connect Metamask</Button>}
       </Flex>
     </Flex>
 

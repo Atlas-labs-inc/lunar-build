@@ -19,15 +19,37 @@ import { NFTStorage } from 'nft.storage';
 
 
 export const SettingsModal = () => {
+  const signer = useStore((state) => state.signer)
   const showSettingsModal = useStore((state) => state.showSettingsModal)
   const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
   const currentUser = useStore((state) => state.currentUser)
   const [message, setMessage] = React.useState('')
-  const contract = useStore((state) => state.contract)
+  const [contract, setContract] = useState(null)
   const updateBio = useStore((state) => state.updateBio)
   const upadtePfp = useStore((state) => state.updatePfp)
   const { status, connect, account, chainId, ethereum } = useMetaMask();
   const token ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweENBNzNBN2E5OTMwYzlGNzZhRkU2Mjg2Q2JEYmY3ZTg4Mzk4ZTI3MzciLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY2NzcwOTI2MDQxOCwibmFtZSI6ImJyb3dzZXJfa2V5In0.VIgC8IxxNy9AB8uKxmLj0Ya2W8VoFVWLhgmL8Cl0Mzo'
+
+  useEffect(() => {
+    if (signer && !contract) {
+      // const c = new Contract(
+      //   process.env.NEXT_PUBLIC_PROFILE_CONTRACT,
+      //   profileABI,
+      //   signer
+      // );
+      const provider = new Provider(process.env.NEXT_PUBLIC_Pl2);
+      const operatorWallet = new Wallet(cookies.get('operatorKey'), provider);
+      const op = new Contract(
+        process.env.NEXT_PUBLIC_PROFILE_CONTRACT,
+        profileABI,
+        operatorWallet
+        );
+      setContract(op)
+      // setProv(provider)
+      // setOpWallet(operatorWallet)
+      // checkIfNewUser(c, operatorWallet)
+    }
+  }, [signer])
 
   const fileUploadHandler = async (event) => {
     console.log("File Uploding...")
