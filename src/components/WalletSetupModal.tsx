@@ -1,12 +1,7 @@
-import { Flex, Heading, useDisclosure, Button, Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalBody, ModalHeader, ModalFooter,   AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
+import { Flex, Heading, Button, 
   Text,
   Image,
-  AlertDialogOverlay,
-  Input,} from '@chakra-ui/react'
+} from '@chakra-ui/react'
 import { useStore } from '../store'
 import React, { useEffect, useState } from 'react';
 import { useMetaMask } from 'metamask-react'
@@ -28,52 +23,42 @@ export const WalletSetupModal = () => {
   const setShowModal1 = useStore((state) => state.setShowModal1)
   const showSetUsernameModal = useStore((state) => state.showSetUsernameModal)
   const setShowSetUsernameModal = useStore((state) => state.setShowSetUsernameModal)
-  const [ executed, setExecuted] = useState(false)
   const newUserStatus = useStore((state) => state.newUserStatus)
-  const OPAddress = useStore((state) => state.OPAddress)
   const setOPAddress = useStore((state) => state.setOPAddress)
   const wasConnected = useStore((state) => state.wasConnected)
-  const setWasConnected = useStore((state) => state.setWasConnected)
   const { addChain } = useMetaMask();
   const [chainAdded, setChainAdded] = useState(false)
   const setSigner = useStore((state) => state.setSigner)
   const setOperatorSigner = useStore((state) => state.setOperatorSigner)
-  const signer = useStore((state) => state.signer)
   const { status, connect, account, chainId, ethereum } = useMetaMask();
   const [loading, setLoading] = useState(false)
   
+  const ChainNetworkParams = {
+    chainId: "0x10E",
+    chainName: "Lunar Chain",
+    rpcUrls: [process.env.NEXT_PUBLIC_Pl2],
+    
+    nativeCurrency: {
+      name: "ETH",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    //blockExplorerUrls: ["https://blockscout.com/xdai/mainnet/"] 
+  };
 
-  const provider = new Provider(process.env.NEXT_PUBLIC_Pl2);
-
-
-  const WrongNetwork = async () =>{
-    const ChainNetworkParams = {
-      chainId: "0x10E",
-      chainName: "Lunar Chain",
-      rpcUrls: [process.env.NEXT_PUBLIC_Pl2],
-      
-      nativeCurrency: {
-        name: "ETH",
-        symbol: "ETH",
-        decimals: 18,
-      },
-      blockExplorerUrls: ["https://blockscout.com/xdai/mainnet/"]
-    };
-    const result = await addChain(ChainNetworkParams)
-    console.log(result)
-    if (result === undefined) {
-      setChainAdded(true)
+  const addLunarChain = async () =>{
+    console.log("Wrong Network!")
+    addChain(ChainNetworkParams).then((result) => {
+      console.log(result)
+      // if (val === undefined) {
+      //   setChainAdded(true)
+      // }
+    },
+    (error) => {
+      console.log(error)
     }
+    )
   }
-
-  const checkChainID = async () => {
-    if (chainId != '0x10e') {
-      console.log("Wrong Network!")
-      WrongNetwork()
-    }
-  }
-
-  //checkChainID()
 
   const checkBalance = async (privateKey) => {
     const provider = new Provider(process.env.NEXT_PUBLIC_Pl2)
@@ -93,24 +78,25 @@ export const WalletSetupModal = () => {
     if ((await provider.getBalance(account)).lt(ethers.utils.parseEther("0.01"))) {   //Check if Metsmask has at least 0.01 ETH
       console.log("(Metamask) requesting funds... " + account)
       fundWallet(account).then(val => {
-        console.log(val)
+        console.log("Metamask Balance: " + val)
         // console.log("metamask Balance after funding: " + userBalance)
+      })    
+    } else{
+        console.log(account + " - Metamask wallet above 0.01 ETH ")
+        setShowModal1(false)    
+    }
 
-        if (operatorBalance.lt(ethers.utils.parseEther("0.01"))) {   //Check if operator has at least 0.01 ETH
-          console.log("(Operator) requesting funds... " + operatorWallet.address)
-          fundWallet(operatorWallet.address).then(val => {
-            console.log("Operator Balance: " + operatorBalance)
-            setShowModal1(false)
-          })
-        } else{
-          console.log(operatorWallet.address +" - Operator wallet above 0.01 ETH")
-          setShowModal1(false)
-        }
+    if (operatorBalance.lt(ethers.utils.parseEther("0.01"))) {   //Check if operator has at least 0.01 ETH
+      console.log("(Operator) requesting funds... " + operatorWallet.address)
+      fundWallet(operatorWallet.address).then(val => {
+        console.log("Operator Balance: " + val)
+        setShowModal1(false)
       })
     } else{
-      console.log(account + " - Metamask wallet above 0.01 ETH ")
+      console.log(operatorWallet.address +" - Operator wallet above 0.01 ETH")
       setShowModal1(false)
     }
+    
 
     return true
   }
@@ -142,22 +128,34 @@ export const WalletSetupModal = () => {
     }
   }
 
-
+  
   useEffect(() => {
     walletConnected() 
   }, [status])
+
+
 
 if (showModal1) {
   return (
     <Flex direction={'column'} zIndex={1} position={'absolute'}  w='100%' h='100%' justify={'center'}>
       <Flex position={'absolute'} w='100%' h='100%' bg='black' backdropBlur={'100%'} blur={'100%'} opacity={'60%'}></Flex>
-      <Flex zIndex={1} align={'center'}  direction='column' margin={'0 auto'} w='420px' h='360px' borderRadius={'10px'} bg='#313131'>
+      <Flex zIndex={1} align={'center'}  direction='column' margin={'0 auto'} w='420px' h='410px' borderRadius={'10px'} bg='#313131'>
         <Image mt='20px' w={'200px'} src={'https://i.ibb.co/PwbLCH8/lunar-logo-2-1.png'}></Image>
         <Heading mt='0px' color={'#B9BBBE'} fontWeight={'medium'} fontSize={'15px'}>Welcome to</Heading>
         <Heading mt='0px' color={'white'} fontWeight={'bold'} fontSize={'45px'}>Lunar</Heading>
         <Text mt='10px' textAlign={'center'} w='80%' color={'#C4C4C4'} fontWeight={'medium'} fontSize={'13px'}>To get started, you'll need to set up your wallet.</Text>
-        {/* {(chainId != '0x10e') && <Button disabled mt='25px' w='80%' className="btn" bg='gray' type="button" onClick={connect}>Connect Metamask</Button>} */}
-        {(chainId === '0x10e') && <Button mt='25px' w='80%' className="btn" bg='#347BE5' type="button" onClick={connect} isLoading={loading}>Connect Metamask</Button>}
+        {(chainId != '0x10e') && 
+          <Flex direction='column' align={'center'}>
+            <Button mt='25px' w='114%' className="btn" bg='#347BE5' type="button" onClick={() => addLunarChain()} isLoading={loading}>Add Lunar Chain to Metamask</Button>
+            <Button disabled mt='10px' w='114%' className="btn" type="button" onClick={connect} isLoading={loading}>Connect Metamask</Button>
+          </Flex>
+        }
+        {(chainId === '0x10e') && 
+          <Flex direction='column' align={'center'}>
+            <Button disabled mt='25px' w='108%' className="btn" bg='#347BE5' type="button" onClick={() => addLunarChain()} isLoading={loading}>Add Lunar Chain to Metamask ✓</Button>
+            <Button mt='10px' w='108%' className="btn" bg='#347BE5' type="button" onClick={connect} isLoading={loading}>Connect Metamask</Button>
+          </Flex>
+        }
       </Flex>
     </Flex>
 

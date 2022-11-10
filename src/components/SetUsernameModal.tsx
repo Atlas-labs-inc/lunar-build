@@ -34,11 +34,8 @@ export const SetUsernameModal = () => {
   const [opWallet, setOpWallet] = useState(null)
   const [executed, setExecuted] = useState(false)
   
-    // Note that we still need to get the Metamask signer
-    // const signer = (new Web3Provider(ethereum)).getSigner();
-
-
-
+  // Note that we still need to get the Metamask signer
+  // const signer = (new Web3Provider(ethereum)).getSigner();
 
   const checkOPAddress = async (contract, opWallet) => {
     console.log("Checking OPAddress...")
