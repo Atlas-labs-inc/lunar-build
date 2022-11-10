@@ -78,8 +78,7 @@ export const WalletSetupModal = () => {
     if ((await provider.getBalance(account)).lt(ethers.utils.parseEther("0.01"))) {   //Check if Metsmask has at least 0.01 ETH
       console.log("(Metamask) requesting funds... " + account)
       fundWallet(account).then(val => {
-        console.log("Metamask Balance: " + val)
-        // console.log("metamask Balance after funding: " + userBalance)
+        console.log("Metamask Balance: " + userBalance)
       })    
     } else{
         console.log(account + " - Metamask wallet above 0.01 ETH ")
@@ -89,7 +88,9 @@ export const WalletSetupModal = () => {
     if (operatorBalance.lt(ethers.utils.parseEther("0.01"))) {   //Check if operator has at least 0.01 ETH
       console.log("(Operator) requesting funds... " + operatorWallet.address)
       fundWallet(operatorWallet.address).then(val => {
-        console.log("Operator Balance: " + val)
+        operatorWallet.getBalance().then(val => {
+          console.log("Operator Balance: " + operatorBalance)
+        })
         setShowModal1(false)
       })
     } else{
