@@ -32,35 +32,39 @@ import {
     }
 
     useEffect(() => {
-      channelManager.on('MessageEvent', (channel, message) => {
-        console.log(message.username)
-        if (message.username === currentUser.name) return
-        if (channel === currentChannel.name) {
-          console.log('message event firing')
-          // console.log(currentChannel.messages)
-          const userDetails = server.members.find((member) => member.name === message.username)
-          const newMessage = {
-            id: message.id.toString() as string,
-            content: message.message as string,
-            author: {
-              name: message.username,
-              pfp: userDetails?.pfp,
-              role: userDetails?.role,
-            },
-            timestamp: message.timestamp.toString() as string,
-            replyTo: message.reply_id.toString() as string,
+      if (currentUser) {
+
+        channelManager.on('MessageEvent', (channel, message) => {
+          console.log(message.username)
+          console.log(currentUser.name)
+          if (message.username === currentUser.name) return
+          if (channel === currentChannel.name) {
+            console.log('message event firing')
+            // console.log(currentChannel.messages)
+            const userDetails = server.members.find((member) => member.name === message.username)
+            const newMessage = {
+              id: message.id.toString() as string,
+              content: message.message as string,
+              author: {
+                name: message.username,
+                pfp: userDetails?.pfp,
+                role: userDetails?.role,
+              },
+              timestamp: message.timestamp.toString() as string,
+              replyTo: message.reply_id.toString() as string,
+            }
+          
+            const existingMessages = currentChannel.messages.map(m => m.id)
+            if (!existingMessages.includes(newMessage.id)) {
+              addMessage(newMessage)
+            }
           }
-        
-          const existingMessages = currentChannel.messages.map(m => m.id)
-          if (!existingMessages.includes(newMessage.id)) {
-            addMessage(newMessage)
-          }
-        }
-      })
+        })
+      }
       return () => {
         channelManager.removeAllListeners()
       }
-    }, [])
+    }, [currentUser])
   
     // TODO: add reply functionality
     const messageList = messages.map((message) => {

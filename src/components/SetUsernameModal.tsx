@@ -104,6 +104,7 @@ export const SetUsernameModal = () => {
             // if (userData[5] == true) {
             //   adminTemp = "admin"
             // }
+            // console.log('userdata' ,userData[0])
             setCurrentUser({
               name: userData[0],
               pfp: userData[1],
