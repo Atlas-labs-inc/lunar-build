@@ -15,6 +15,7 @@ import { Contract, Web3Provider, Provider, Wallet } from "zksync-web3";
 import { useMetaMask } from 'metamask-react'
 import profileABI from '../abis/profile.json'
 import cookies from '../cookies';
+import { WalletSetupModal } from './WalletSetupModal';
 
 export const SetUsernameModal = () => {
   const showSetUsernameModal = useStore((state) => state.showSetUsernameModal)
@@ -25,7 +26,6 @@ export const SetUsernameModal = () => {
   const setNewUserStatus = useStore((state) => state.setNewUserStatus)
   const currentUser = useStore((state) => state.currentUser)
   const setCurrentUser = useStore((state) => state.setCurrentUser)
-  const [OPAddressUpdated, setOPAddressUpdated] = useState(false)
   const [loading, setLoading] = useState(false)
   const signer = useStore((state) => state.signer)
   const [contract, setContract] = useState(null)
@@ -33,6 +33,9 @@ export const SetUsernameModal = () => {
   const [prov, setProv] = useState(null)
   const [opWallet, setOpWallet] = useState(null)
   const [executed, setExecuted] = useState(false)
+  const setFundOperator = useStore((state) => state.setFundOperator)
+  const refreshUserPanel = useStore((state) => state.refreshUserPanel)
+  const setRefreshUserPanel = useStore((state) => state.setRefreshUserPanel)
   
   // Note that we still need to get the Metamask signer
   // const signer = (new Web3Provider(ethereum)).getSigner();
@@ -46,65 +49,53 @@ export const SetUsernameModal = () => {
     console.log("User OPA = " + opWallet.address)
     if (onChainOPA != opWallet.address) {
       console.log("OPAddress not up to date, updating...")
-      try{
-        console.log(await contract.updateOperatorAddress(userData.username, opWallet.address))
-      } catch(error){
-        console.log(error)
-      }
+      contract.updateOperatorAddress(userData.username, opWallet.address).then((result) => {
+      setFundOperator(true)
+      })
+
     }
   }
 
   const createAccount = async (username) => {
     console.log('creating account...')
     setLoading(true)
-    try {
-        contract.newUser({
-          username: username,
-          pfp_link: "https://avatars.githubusercontent.com/u/35270686?s=280&v=4",
-          operator_wallet: opWallet.address,
-          bio: "I'm a new user!",
-        }).then(tx => {
-          tx.wait().then(receipt => {
-            console.log("New user created!")
-            setCurrentUser({
-              name: username,
-              pfp: "https://avatars.githubusercontent.com/u/35270686?s=280&v=4",
-              operatorWallet: opWallet.address,
-              role: "member",
-              bio: "I'm a new user!"
-            })
-            setLoading(false)
-            setShowSetUsernameModal(false)
-            console.log('account created!')
-          })
-        });
-        // checkIfNewUser()
-    } catch (error) {
-        console.log(error);
+    contract.newUser({
+      username: username,
+      pfp_link: "https://avatars.githubusercontent.com/u/35270686?s=280&v=4",
+      operator_wallet: opWallet.address,
+      bio: "I'm a new user!",
+    }).then(receipt => {
+        setCurrentUser({
+          name: username,
+          pfp: "https://avatars.githubusercontent.com/u/35270686?s=280&v=4",
+          operatorWallet: opWallet.address,
+          role: "member",
+          bio: "I'm a new user!"
+        })
+
         setLoading(false)
-    }
+        setShowSetUsernameModal(false)
+        setRefreshUserPanel(true)
+        console.log('new account created!')
+      })
   }
 
 
   const checkIfNewUser = async (contract, operatorWallet) => {
     try {
-        console.log('checking if user exists...!')
-        console.log(contract)
-        console.log(account)
+        // console.log('checking if user exists...!')
+        // console.log(contract)
+        // console.log(account)
         // const userData = await contract.getUserFromMainAddress(account) //check if user exists
         // console.log(userData)
         contract.getUserFromMainAddress(account).then((userData) => {
-          console.log('userData:')
-          console.log(userData)
+          // console.log('userData:')
+          // console.log(userData)
     
           if (userData[0] == '') {
             console.log('new user detected')
           } else {
-            // var adminTemp = "member"
-            // if (userData[5] == true) {
-            //   adminTemp = "admin"
-            // }
-            // console.log('userdata' ,userData[0])
+            console.log('user exists')
             setCurrentUser({
               name: userData[0],
               pfp: userData[1],
@@ -113,9 +104,7 @@ export const SetUsernameModal = () => {
             })
             setNewUserStatus(false)
             // setContract(OPcontract)
-            if(!OPAddressUpdated){
-              checkOPAddress(contract, operatorWallet)
-            }
+            checkOPAddress(contract, operatorWallet)
             setShowSetUsernameModal(false)
           }
         })

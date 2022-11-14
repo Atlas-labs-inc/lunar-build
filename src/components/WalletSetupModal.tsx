@@ -15,6 +15,7 @@ import { SetUsernameModal } from './SetUsernameModal';
 import { Contract, Web3Provider } from "zksync-web3";
 import { userAgent } from 'next/server';
 import profileABI from '../abis/profile.json'
+import { start } from 'repl';
 
 
 export const WalletSetupModal = () => {
@@ -32,7 +33,9 @@ export const WalletSetupModal = () => {
   const setOperatorSigner = useStore((state) => state.setOperatorSigner)
   const { status, connect, account, chainId, ethereum } = useMetaMask();
   const [loading, setLoading] = useState(false)
-  
+  const fundOperator = useStore((state) => state.fundOperator)
+  const setFundOperator = useStore((state) => state.setFundOperator)
+
   const ChainNetworkParams = {
     chainId: "0x10E",
     chainName: "Lunar Chain",
@@ -69,16 +72,17 @@ export const WalletSetupModal = () => {
 
     setSigner(signer)
     setOperatorSigner(operatorWallet)
-
     setOPAddress(operatorWallet.address)
 
-    // console.log("Operator Balance: " + operatorBalance)
-    // console.log("User Balance: " + userBalance)
+    console.log("Operator Balance: " + operatorBalance)
+    console.log("User Balance: " + userBalance)
 
-    if ((await provider.getBalance(account)).lt(ethers.utils.parseEther("0.01"))) {   //Check if Metsmask has at least 0.01 ETH
+    if (userBalance.lt(ethers.utils.parseEther("0.01"))) {   //Check if Metsmask has at least 0.01 ETH
       console.log("(Metamask) requesting funds... " + account)
-      fundWallet(account).then(val => {
-        console.log("Metamask Balance: " + userBalance)
+      await fundWallet(account).then(val => {
+        provider.getBalance(account).then(val => {
+          console.log("Metamask Balance: " + val)
+        })
       })    
     } else{
         console.log(account + " - Metamask wallet above 0.01 ETH ")
@@ -89,9 +93,9 @@ export const WalletSetupModal = () => {
       console.log("(Operator) requesting funds... " + operatorWallet.address)
       fundWallet(operatorWallet.address).then(val => {
         operatorWallet.getBalance().then(val => {
-          console.log("Operator Balance: " + operatorBalance)
+          console.log("Operator Balance: " + val)
+          setShowModal1(false)
         })
-        setShowModal1(false)
       })
     } else{
       console.log(operatorWallet.address +" - Operator wallet above 0.01 ETH")
@@ -106,12 +110,20 @@ export const WalletSetupModal = () => {
     return await axios.post('/api/fund', {main_address: walletAddress})
   }
 
+
   const startBalanceCheck = async () => {
 
       if (cookies.get('operatorKey') === undefined) {
         cookies.set('operatorKey', "0x"+crypto.randomBytes(32).toString('hex'), { path: '/' })
       }
       checkBalance(cookies.get('operatorKey'))
+  }
+
+  if(fundOperator){
+    startBalanceCheck().then(val => {
+      console.log("Funding new operator!")
+      setFundOperator(false)
+    })
   }
 
   const walletConnected = async () => {

@@ -25,8 +25,8 @@ const Home = () => {
   const setServer = useStore((state) => state.setServer);
   const setCurrentChannel = useStore((state) => state.setCurrentChannel);
   const setLoadingMessages = useStore((state) => state.setLoadingMessages);
-  const currentChannel = useStore((state) => state.currentChannel);
-  const server = useStore((state) => state.server);
+  const refreshUserPanel = useStore((state) => state.refreshUserPanel);
+  const setRefreshUserPanel = useStore((state) => state.setRefreshUserPanel);
 
     useEffect(() => {
       if (provider === null) {
@@ -100,7 +100,8 @@ const Home = () => {
           })
         })
       }
-    }, [])
+      setRefreshUserPanel(false)
+    }, [refreshUserPanel])
 
     return (
       <MetaMaskProvider>

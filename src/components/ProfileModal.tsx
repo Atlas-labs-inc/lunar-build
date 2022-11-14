@@ -30,8 +30,12 @@ export const ProfileModal = () => {
   }
 
   const getAdminStatus = async () => {
-    const data = await contract.getUser(currentUser.name)
-    ///data.is_moderator
+    var data
+    console.log(contract)
+    contract.getUser(currentUser.name).then((result) => {
+      data = result
+      console.log("getUser result -" + result)
+    })
     if (data.is_moderator){
       setIsMod(true)
     } else {{
@@ -40,7 +44,7 @@ export const ProfileModal = () => {
   }
 
   const AdminToggle = () => {
-    getAdminStatus()
+    // getAdminStatus()
     if(isMod){
       if (currentProfile.role === 'admin'){
         return(

@@ -50,6 +50,10 @@ type Store = {
   setProviderT: (provider: any) => void;
   operatorSigner: any;
   setOperatorSigner: (signer: any) => void;
+  fundOperator: boolean;
+  setFundOperator: (fundOperator: boolean) => void;
+  refreshUserPanel: boolean;
+  setRefreshUserPanel: (refresh: boolean) => void;
 }
 
 export const useStore = create<Store>((set) => ({
@@ -129,4 +133,8 @@ export const useStore = create<Store>((set) => ({
   setProviderT: (providerT) => set({ providerT: providerT }),
   operatorSigner: null,
   setOperatorSigner: (operatorSigner) => set({ operatorSigner: operatorSigner }),
+  fundOperator: false,
+  setFundOperator: (fundOperator) => set({ fundOperator: fundOperator }),
+  refreshUserPanel: false,
+  setRefreshUserPanel: (refreshUserPanel) => set({ refreshUserPanel: refreshUserPanel }),
 }));

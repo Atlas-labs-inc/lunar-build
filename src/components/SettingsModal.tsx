@@ -32,11 +32,6 @@ export const SettingsModal = () => {
 
   useEffect(() => {
     if (signer && !contract) {
-      // const c = new Contract(
-      //   process.env.NEXT_PUBLIC_PROFILE_CONTRACT,
-      //   profileABI,
-      //   signer
-      // );
       const provider = new Provider(process.env.NEXT_PUBLIC_Pl2);
       const operatorWallet = new Wallet(cookies.get('operatorKey'), provider);
       const op = new Contract(
@@ -45,9 +40,6 @@ export const SettingsModal = () => {
         operatorWallet
         );
       setContract(op)
-      // setProv(provider)
-      // setOpWallet(operatorWallet)
-      // checkIfNewUser(c, operatorWallet)
     }
   }, [signer])
 
