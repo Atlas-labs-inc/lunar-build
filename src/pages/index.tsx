@@ -100,8 +100,7 @@ const Home = () => {
           })
         })
       }
-      setRefreshUserPanel(false)
-    }, [refreshUserPanel])
+    }, [])
 
     return (
       <MetaMaskProvider>

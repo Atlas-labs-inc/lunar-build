@@ -14,8 +14,6 @@ import {
   
   export const RoleGroup = ({ role, members }: RoleGroupProps) => {
     const setShowProfileModal = useStore((state) => state.setShowProfileModal)
-    const showProfileModal = useStore((state) => state.showProfileModal)
-    const currentProfile = useStore((state) => state.currentProfile)
     const setCurrentProfile = useStore((state) => state.setCurrentProfile)
 
     const users = members.map((member) => {
