@@ -45,7 +45,7 @@ if (showCreateChannel) {
             }
           }} variant='filled' placeholder='e.g welcome'></Input>
         </Flex>
-        <Button mt='20px' w='80%' className="btn" bg='#347BE5' type="button" onClick={() => createChannel(message)}>Create Channel</Button>
+        <Button mt='20px' w='80%' className="btn" bg='#347BE5' type="button" onClick={() => {createChannel(message); setShowCreateChannel(false)}}>Create Channel</Button>
       </Flex>
     </Flex>
 

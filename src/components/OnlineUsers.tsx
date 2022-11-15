@@ -4,12 +4,6 @@ import { RoleGroup } from './RoleGroup'
 
 export const OnlineUsers = () => {
   const { members } = useStore((state) => state.server)
-  const refreshUserPanel = useStore((state) => state.refreshUserPanel)
-
-  if(refreshUserPanel){
-    console.log("Refresh User Panel triggered...")
-    window.location.reload()
-  }
 
   const users = ['admin', 'member'].map((role) => {
     const membersWithRole = members.filter((member) => member.role === role)

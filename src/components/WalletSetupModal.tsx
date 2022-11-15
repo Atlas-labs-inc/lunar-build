@@ -127,6 +127,7 @@ export const WalletSetupModal = () => {
   }
 
   const walletConnected = async () => {
+    setLoading(false)
     if (status === 'connected') { //wallet connected
       console.log("Metamask Connected")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
       startBalanceCheck().then(val => {

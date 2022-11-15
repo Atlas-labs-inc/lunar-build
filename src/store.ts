@@ -42,6 +42,8 @@ type Store = {
   updateBio: (bio: string) => void;
   updatePfp: (pfp: string) => void;
   addMessage: (message: Message) => void;
+  addMember: (member: User) => void;
+  updateMembers: (members: User[]) => void;
   wasConnected: boolean;
   setWasConnected: (wasConnected: boolean) => void;
   signer: any;
@@ -54,6 +56,10 @@ type Store = {
   setFundOperator: (fundOperator: boolean) => void;
   refreshUserPanel: boolean;
   setRefreshUserPanel: (refresh: boolean) => void;
+  profileContract: any;
+  setProfileContract: (contract: any) => void;
+  opContract: any;
+  setOpContract: (contract: any) => void;
 }
 
 export const useStore = create<Store>((set) => ({
@@ -125,6 +131,8 @@ export const useStore = create<Store>((set) => ({
   OPAddress: null,
   setOPAddress: (OPAddress) => set({ OPAddress: OPAddress }),
   addMessage: (message) => set((state) => ({ currentChannel: { name: state.currentChannel.name, messages: [...state.currentChannel.messages, message] } })),
+  addMember: (member) => set((state) => ({ server: { name: state.server.name, icon: state.server.icon, banner: state.server.banner, channels: state.server.channels, members: [...state.server.members, member] } })),
+  updateMembers: (members) => set((state) => ({ server: { name: state.server.name, icon: state.server.icon, banner: state.server.banner, channels: state.server.channels, members: members } })),
   wasConnected: false,
   setWasConnected: (wasConnected) => set({ wasConnected: wasConnected }),
   signer: null,
@@ -137,4 +145,8 @@ export const useStore = create<Store>((set) => ({
   setFundOperator: (fundOperator) => set({ fundOperator: fundOperator }),
   refreshUserPanel: false,
   setRefreshUserPanel: (refreshUserPanel) => set({ refreshUserPanel: refreshUserPanel }),
+  profileContract: null,
+  setProfileContract: (profileContract) => set({ profileContract: profileContract }),
+  opContract: null,
+  setOpContract: (opContract) => set({ opContract: opContract }),
 }));

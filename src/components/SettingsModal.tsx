@@ -28,9 +28,10 @@ export const SettingsModal = () => {
   const updateBio = useStore((state) => state.updateBio)
   const upadtePfp = useStore((state) => state.updatePfp)
   const { status, connect, account, chainId, ethereum } = useMetaMask();
-  const setServer = useStore((state) => state.setServer)
-  const setRefreshUserPanel = useStore((state) => state.setRefreshUserPanel)
   const token ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweENBNzNBN2E5OTMwYzlGNzZhRkU2Mjg2Q2JEYmY3ZTg4Mzk4ZTI3MzciLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY2NzcwOTI2MDQxOCwibmFtZSI6ImJyb3dzZXJfa2V5In0.VIgC8IxxNy9AB8uKxmLj0Ya2W8VoFVWLhgmL8Cl0Mzo'
+  const updateMembers = useStore((state) => state.updateMembers)
+  const server = useStore((state) => state.server)
+
 
   useEffect(() => {
     if (signer && !contract) {
@@ -46,7 +47,6 @@ export const SettingsModal = () => {
   }, [signer])
 
   const fileUploadHandler = async (event) => {
-    setRefreshUserPanel(true)
     console.log("File Uploding...")
     console.log(event.target.files[0])
     const store = new NFTStorage({ token })
@@ -57,7 +57,13 @@ export const SettingsModal = () => {
     upadtePfp(link)
     console.log(await (await contract.updateProfilePicture(currentUser.name, link)).wait())
     console.log("File Uploaded to IPFS...")
-    setRefreshUserPanel(false)
+    const newMembers = server.members.map((member) => {
+      if (member.name == currentUser.name) {
+        member.pfp = link
+      }
+      return member
+    })
+    updateMembers(newMembers)
   }
 
   const updateBioFunc = async (bio) => {

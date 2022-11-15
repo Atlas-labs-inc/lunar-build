@@ -29,13 +29,14 @@ export const SetUsernameModal = () => {
   const [loading, setLoading] = useState(false)
   const signer = useStore((state) => state.signer)
   const [contract, setContract] = useState(null)
-  const [opContract, setOpContract] = useState(null)
+  const opContract = useStore((state) => state.opContract)
+  const setOpContract = useStore((state) => state.setOpContract)
   const [prov, setProv] = useState(null)
   const [opWallet, setOpWallet] = useState(null)
   const [executed, setExecuted] = useState(false)
   const setFundOperator = useStore((state) => state.setFundOperator)
-  const refreshUserPanel = useStore((state) => state.refreshUserPanel)
-  const setRefreshUserPanel = useStore((state) => state.setRefreshUserPanel)
+  const addMember = useStore((state) => state.addMember)
+  const setProfileContract = useStore((state) => state.setProfileContract)
   
   // Note that we still need to get the Metamask signer
   // const signer = (new Web3Provider(ethereum)).getSigner();
@@ -75,7 +76,13 @@ export const SetUsernameModal = () => {
 
         setLoading(false)
         setShowSetUsernameModal(false)
-        setRefreshUserPanel(true)
+        addMember({
+          name: username,
+          pfp: "https://avatars.githubusercontent.com/u/35270686?s=280&v=4",
+          operatorWallet: opWallet.address,
+          role: "member",
+          bio: "I'm a new user!"
+        })
         console.log('new account created!')
       })
   }
@@ -121,6 +128,7 @@ export const SetUsernameModal = () => {
         signer
       );
       setContract(c)
+      setProfileContract(c)
       const provider = new Provider(process.env.NEXT_PUBLIC_Pl2);
       const operatorWallet = new Wallet(cookies.get('operatorKey'), provider);
       // console.log(operatorWallet)

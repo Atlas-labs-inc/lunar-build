@@ -11,62 +11,69 @@ import { Flex, Heading, useDisclosure, Button, Modal, ModalOverlay, ModalContent
   Input,} from '@chakra-ui/react'
 import { useStore } from '../store'
 import React, { useState } from 'react';
+import profileABI from '../abis/profile.json'
+import { Contract, Web3Provider, Provider, Wallet } from "zksync-web3";
+
 
 export const ProfileModal = () => {
   const showProfileModal = useStore((state) => state.showProfileModal)
   const setShowProfileModal = useStore((state) => state.setShowProfileModal)
   const currentUser = useStore((state) => state.currentUser)
   const currentProfile = useStore((state) => state.currentProfile)
-  const [switchValue, setSwitchValue] = React.useState(false)
-  const contract = useStore((state) => state.contract)
+  const signer = useStore((state) => state.signer)
   const [isMod, setIsMod] = React.useState(false)
+  const opContract = useStore((state) => state.opContract)
+  const updateMembers = useStore((state) => state.updateMembers)
+  const server = useStore((state) => state.server)
 
-
-  const changeSwitch = async () => {
-    console.log(switchValue)
+  const madeAdmin = async () => {
     console.log(currentProfile.name)
-    console.log(await contract.updateModeratorStatus(currentProfile.name, switchValue))
-    setSwitchValue(!switchValue)
-  }
-
-  const getAdminStatus = async () => {
-    var data
-    console.log(contract)
-    contract.getUser(currentUser.name).then((result) => {
-      data = result
-      console.log("getUser result -" + result)
+    opContract.updateModeratorStatus(currentProfile.name, true).then((result) => {
+      console.log(result)
+      const newMembers = server.members.map((member) => {
+        if (member.name == currentProfile.name) {
+          member.role = 'admin'
+        }
+        return member
+      })
+      updateMembers(newMembers)
     })
-    if (data.is_moderator){
-      setIsMod(true)
-    } else {{
-      setIsMod(false)
-    }}
   }
 
-  const AdminToggle = () => {
-    // getAdminStatus()
-    if(isMod){
+  const madeMember = async () => {
+    console.log(currentProfile.name)
+    opContract.updateModeratorStatus(currentProfile.name, false).then((result) => {
+      console.log(result)
+      const newMembers = server.members.map((member) => {
+        if (member.name == currentProfile.name) {
+          member.role = 'member'
+        }
+        return member
+      })
+      updateMembers(newMembers)
+    })
+  }
+
+  const AdminToggle = () => {   
+    if(currentUser.role){
       if (currentProfile.role === 'admin'){
+        console.log("ADMIN")
         return(
-          <Flex align={'center'} justify={'center'} direction={'column'} position={'absolute'} mr='300px' mt='20px' w={'70px'} h='50px'>
-            <Heading mb='8px' color='gray' fontSize={'12px'}>Admin</Heading>
-            <Switch defaultChecked onChange={() => changeSwitch()} colorScheme={'green'} size='lg' />
+          <Flex align={'center'} justify={'center'} direction={'column'} position={'absolute'} ml='35px' mr='300px' mt='10px' w={'70px'} h='50px'>
+            {/* <Heading mb='8px' color='gray' fontSize={'12px'}>Admin</Heading> */}
+            <Button onClick={() => {madeMember(); setShowProfileModal(false);}} w='120px' ml='8px' mb='-6px' colorScheme={'gray'} size='sm' >Make Member</Button>
           </Flex>
         )
       } else {
         return(
           <Flex align={'center'} justify={'center'} direction={'column'} position={'absolute'} mr='300px' mt='20px' w={'70px'} h='50px'>
-          <Heading mb='8px' color='gray' fontSize={'12px'}>Admin</Heading>
-          <Switch onChange={() => changeSwitch()} colorScheme={'green'} size='lg' />
+          <Button onClick={() => {madeAdmin(); setShowProfileModal(false);}} w='100px' ml='15px' mb='12px' bg={'#307BF4'} color={'white'} size='sm' >Make Admin</Button>
         </Flex>
         )
       }
     } else {
       return(null)
     }
-    
-
-
   }
 
 if (showProfileModal) {
