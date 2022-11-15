@@ -101,7 +101,7 @@ import { useStore } from '../store'
           }
     })
 
-    const createChannel = currentUser.role ? (
+    const createChannel = (currentUser.role == 'true') ? (
       <Button bg='transparent' w='30px' h={'30px'} onClick={() => setShowCreateChannel(true)}  marginLeft={'7.8vw'} marginTop='-0.2vw'  ><Image w='10px' src='https://i.ibb.co/YbVFDqN/Plus.png' ></Image></Button>
     ) : null
   

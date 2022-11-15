@@ -21,7 +21,6 @@ export const ProfileModal = () => {
   const currentUser = useStore((state) => state.currentUser)
   const currentProfile = useStore((state) => state.currentProfile)
   const signer = useStore((state) => state.signer)
-  const [isMod, setIsMod] = React.useState(false)
   const opContract = useStore((state) => state.opContract)
   const updateMembers = useStore((state) => state.updateMembers)
   const server = useStore((state) => state.server)
@@ -54,14 +53,15 @@ export const ProfileModal = () => {
     })
   }
 
-  const AdminToggle = () => {   
-    if(currentUser.role){
+  const AdminToggle = () => { 
+    console.log(currentUser.role)
+    console.log(currentProfile.role) 
+    if(currentUser.role == 'true') {
       if (currentProfile.role === 'admin'){
-        console.log("ADMIN")
         return(
           <Flex align={'center'} justify={'center'} direction={'column'} position={'absolute'} ml='35px' mr='300px' mt='10px' w={'70px'} h='50px'>
             {/* <Heading mb='8px' color='gray' fontSize={'12px'}>Admin</Heading> */}
-            <Button onClick={() => {madeMember(); setShowProfileModal(false);}} w='120px' ml='8px' mb='-6px' colorScheme={'gray'} size='sm' >Make Member</Button>
+            {(currentProfile.name != currentUser.name) && < Button onClick={() => {madeMember(); setShowProfileModal(false);}} w='120px' ml='8px' mb='-6px' colorScheme={'gray'} size='sm' >Make Member</Button>}
           </Flex>
         )
       } else {

@@ -90,15 +90,7 @@ export const SetUsernameModal = () => {
 
   const checkIfNewUser = async (contract, operatorWallet) => {
     try {
-        // console.log('checking if user exists...!')
-        // console.log(contract)
-        // console.log(account)
-        // const userData = await contract.getUserFromMainAddress(account) //check if user exists
-        // console.log(userData)
         contract.getUserFromMainAddress(account).then((userData) => {
-          // console.log('userData:')
-          // console.log(userData)
-    
           if (userData[0] == '') {
             console.log('new user detected')
           } else {

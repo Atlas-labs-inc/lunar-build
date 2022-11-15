@@ -66,7 +66,7 @@ export const useStore = create<Store>((set) => ({
   currentUser: {
     pfp: 'https://cdn.dribbble.com/users/1176657/screenshots/15468294/media/34af996ddff444391edab94abcf3c7f3.png?compress=1&resize=400x300',
     name: null,
-    role: 'admin',
+    role: 'member',
     bio: 'I am a full stack developer',
     mainWallet: '0x0000000000000000000000000000000000000000',
     operatorWallet: '0x0000000000000000000000000000000000000000',
@@ -75,7 +75,7 @@ export const useStore = create<Store>((set) => ({
   currentProfile: {
     pfp: 'https://cdn.dribbble.com/users/1176657/screenshots/15468294/media/34af996ddff444391edab94abcf3c7f3.png?compress=1&resize=400x300',
     name: 'SameeTheDev',
-    role: 'admin',
+    role: 'member',
     bio: 'I am a full stack developer',
     mainWallet: '0x0000000000000000000000000000000000000000',
     operatorWallet: '0x0000000000000000000000000000000000000000',
