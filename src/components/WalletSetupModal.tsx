@@ -46,16 +46,12 @@ export const WalletSetupModal = () => {
       symbol: "ETH",
       decimals: 18,
     },
-    //blockExplorerUrls: ["https://blockscout.com/xdai/mainnet/"] 
   };
 
   const addLunarChain = async () =>{
     console.log("Wrong Network!")
     addChain(ChainNetworkParams).then((result) => {
       console.log(result)
-      // if (val === undefined) {
-      //   setChainAdded(true)
-      // }
     },
     (error) => {
       console.log(error)
