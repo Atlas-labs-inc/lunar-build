@@ -31,6 +31,7 @@ import { useStore } from '../store'
       channelManager.getMessagesPaginated(channelName, 0, 100).then((messages) => {
 
         const parsedMessages = messages.map((message) => {
+          // console.log('parsedMessage:', message)
           if (message.message === '') {
             return null
           }
@@ -43,6 +44,7 @@ import { useStore } from '../store'
               pfp: userDetails.pfp,
               role: userDetails.role,
             },
+            replyTo: message.reply_id.toString() as string,
             timestamp: message.timestamp.toString(),
           }
         }).filter((message) => message !== null)

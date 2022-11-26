@@ -23,10 +23,12 @@ export const SettingsModal = () => {
   const showSettingsModal = useStore((state) => state.showSettingsModal)
   const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
   const currentUser = useStore((state) => state.currentUser)
+  const currentChannel = useStore((state) => state.currentChannel)
   const [message, setMessage] = React.useState('')
   const [contract, setContract] = useState(null)
   const updateBio = useStore((state) => state.updateBio)
-  const upadtePfp = useStore((state) => state.updatePfp)
+  const updatePfp = useStore((state) => state.updatePfp)
+  const updateMessages = useStore((state) => state.updateMessages)
   const { status, connect, account, chainId, ethereum } = useMetaMask();
   const token ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweENBNzNBN2E5OTMwYzlGNzZhRkU2Mjg2Q2JEYmY3ZTg4Mzk4ZTI3MzciLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY2NzcwOTI2MDQxOCwibmFtZSI6ImJyb3dzZXJfa2V5In0.VIgC8IxxNy9AB8uKxmLj0Ya2W8VoFVWLhgmL8Cl0Mzo'
   const updateMembers = useStore((state) => state.updateMembers)
@@ -53,8 +55,8 @@ export const SettingsModal = () => {
     const cid = await store.storeDirectory(event.target.files)
     const name = event.target.files[0].name;
     const link = `https://${cid}.ipfs.nftstorage.link/${name}`
-    console.log(link)
-    upadtePfp(link)
+    // console.log(link)
+    updatePfp(link)
     console.log(await (await contract.updateProfilePicture(currentUser.name, link)).wait())
     console.log("File Uploaded to IPFS...")
     const newMembers = server.members.map((member) => {
@@ -64,17 +66,24 @@ export const SettingsModal = () => {
       return member
     })
     updateMembers(newMembers)
+    const newMessages = currentChannel.messages.map((message) => {
+      if (message.author.name == currentUser.name) {
+        message.author.pfp = link
+      }
+      return message
+    })
+    updateMessages(newMessages)
   }
 
   const updateBioFunc = async (bio) => {
-    console.log("updating bio...")
+    // console.log("updating bio...")
     setShowSettingsModal(false)
     try {
-        console.log(currentUser.name)
-        console.log(bio)
+        // console.log(currentUser.name)
+        // console.log(bio)
         console.log(await contract.updateBio(currentUser.name, bio))
         updateBio(bio)
-        console.log('Bio updated successfully!')
+        // console.log('Bio updated successfully!')
     } catch (error) {
       console.log(error)
         console.log('Error updating bio...');

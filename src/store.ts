@@ -44,6 +44,7 @@ type Store = {
   addMessage: (message: Message) => void;
   addMember: (member: User) => void;
   updateMembers: (members: User[]) => void;
+  updateMessages: (messages: Message[]) => void;
   wasConnected: boolean;
   setWasConnected: (wasConnected: boolean) => void;
   signer: any;
@@ -90,7 +91,7 @@ export const useStore = create<Store>((set) => ({
   },
   setServer: (server) => set({ server }),
   currentChannel: {
-    name: 'eth-global',
+    name: 'lunar-chat',
     messages: [],
   },
   updateBio: (bio) => set(state => ({ currentUser: {
@@ -133,6 +134,7 @@ export const useStore = create<Store>((set) => ({
   addMessage: (message) => set((state) => ({ currentChannel: { name: state.currentChannel.name, messages: [...state.currentChannel.messages, message] } })),
   addMember: (member) => set((state) => ({ server: { name: state.server.name, icon: state.server.icon, banner: state.server.banner, channels: state.server.channels, members: [...state.server.members, member] } })),
   updateMembers: (members) => set((state) => ({ server: { name: state.server.name, icon: state.server.icon, banner: state.server.banner, channels: state.server.channels, members: members } })),
+  updateMessages: (messages) => set((state) => ({ currentChannel: { name: state.currentChannel.name, messages } })),
   wasConnected: false,
   setWasConnected: (wasConnected) => set({ wasConnected: wasConnected }),
   signer: null,

@@ -68,7 +68,7 @@ import {
   
     // TODO: add reply functionality
     const messageList = messages.map((message) => {
-      // console.log(message)
+      console.log(message)
       const { id, author, content, timestamp } = message
       const date = new Date(parseInt(timestamp) * 1000)
       const day = date.toLocaleDateString() === new Date().toLocaleDateString() ? 'Today' : date.toLocaleDateString()
@@ -79,6 +79,7 @@ import {
       let reply
       if (message.replyTo !== '0') {
         const replyMsg = messages.find((m) => m.id === message.replyTo)
+        console.log(replyMsg)
         reply = (
           <Flex ml='3.5rem' align='center' mb='.5rem'>
             <Avatar size={'xs'} src={replyMsg?.author.pfp} />
