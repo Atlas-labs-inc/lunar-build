@@ -15,7 +15,7 @@ export const OnlineUsers = () => {
 
   return (
     <Flex w='100%' h='100%' bg='#212225'>
-      <Flex direction='column' w='100%' h='100%' mx='1.2rem' my='1rem'>
+      <Flex direction='column' w='100%' h='100%' mx='1.2rem'>
         {users}
       </Flex>
     </Flex>

@@ -3,7 +3,7 @@ import { Flex, FlexProps } from '@chakra-ui/react'
 export const Container = (props: FlexProps) => (
   <Flex
     h='100vh'
-    maxHeight={'100vh'}
+    // maxHeight={'100vh'}
     width="100%"
     direction="row"
     alignItems="center"

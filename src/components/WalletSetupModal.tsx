@@ -49,7 +49,6 @@ export const WalletSetupModal = () => {
   };
 
   const addLunarChain = async () =>{
-    console.log("Wrong Network!")
     addChain(ChainNetworkParams).then((result) => {
       console.log(result)
     },

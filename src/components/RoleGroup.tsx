@@ -31,7 +31,7 @@ import {
   
     return (
       <Flex w='100%'>
-        <Flex direction='column' w='100%' mb='1.3rem'>
+        <Flex direction='column' w='100%'>
           <Text fontSize={'12px'} color='#8E9297' as='b'>{role.toUpperCase() + ' - ' + members.length}</Text>
           {users}
         </Flex>

@@ -16,7 +16,7 @@ import {
     const setShowSettings = useStore((state) => state.setShowSettingsModal)
 
     return (
-      <Flex w='100%' h='65px' bg='#212225' align='center' justify='center' pt='1.5rem'>
+      <Flex w='100%' h='65px' bg='#212225' align='center' justify='center' py='1rem'>
         <Flex  w='100%' direction='row' h='100%' align='center' justify='center' mx='1rem'>
           <Avatar ml={'3px'} w={'35px'} h={'35px'} src={currentUser.pfp} />
           <Text ml='8px' color='#fff' fontWeight={'bold'} fontSize='13px' as='b'>{currentUser.name}</Text>

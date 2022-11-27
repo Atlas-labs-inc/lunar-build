@@ -40,9 +40,9 @@ import { useRef, useEffect } from 'react'
         <Spacer />
         <Flex my='1rem' w='100%' bg='#292A2E' direction='column'>
           <Text mx='1.5rem' fontSize={'2rem'} as='b' color='#fff'>{'Welcome to # ' + currentChannel.name}</Text>
-          <Messages messages={currentChannel.messages} />
-          <div ref={messagesEndRef} />
+          <Messages messages={currentChannel.messages} scrollToBottom={scrollToBottom} />
           <SendMessage />
+          <div ref={messagesEndRef} />
         </Flex>
       </Flex>
     )

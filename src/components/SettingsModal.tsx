@@ -1,8 +1,8 @@
-import { Flex, Heading, useDisclosure, Button, Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalBody, ModalHeader, ModalFooter,   AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
+import {
+  Flex,
+  Heading,
+  useDisclosure,
+  Button,
   Text,
   Image,
   Avatar,
@@ -30,10 +30,9 @@ export const SettingsModal = () => {
   const updatePfp = useStore((state) => state.updatePfp)
   const updateMessages = useStore((state) => state.updateMessages)
   const { status, connect, account, chainId, ethereum } = useMetaMask();
-  const token ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweENBNzNBN2E5OTMwYzlGNzZhRkU2Mjg2Q2JEYmY3ZTg4Mzk4ZTI3MzciLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY2NzcwOTI2MDQxOCwibmFtZSI6ImJyb3dzZXJfa2V5In0.VIgC8IxxNy9AB8uKxmLj0Ya2W8VoFVWLhgmL8Cl0Mzo'
   const updateMembers = useStore((state) => state.updateMembers)
   const server = useStore((state) => state.server)
-
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (signer && !contract) {
@@ -49,41 +48,43 @@ export const SettingsModal = () => {
   }, [signer])
 
   const fileUploadHandler = async (event) => {
-    console.log("File Uploding...")
-    console.log(event.target.files[0])
-    const store = new NFTStorage({ token })
+    setLoading(true)
+
+    if (event.target.files.length < 1) return
+
+    const store = new NFTStorage({ token: process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN });
     const cid = await store.storeDirectory(event.target.files)
     const name = event.target.files[0].name;
     const link = `https://${cid}.ipfs.nftstorage.link/${name}`
-    // console.log(link)
-    updatePfp(link)
-    console.log(await (await contract.updateProfilePicture(currentUser.name, link)).wait())
-    console.log("File Uploaded to IPFS...")
-    const newMembers = server.members.map((member) => {
-      if (member.name == currentUser.name) {
-        member.pfp = link
-      }
-      return member
+    contract.updateProfilePicture(currentUser.name, link).then((result) => {
+      console.log("File Uploaded to IPFS...")
+
+      updatePfp(link)
+      setLoading(false)
+
+      const newMembers = server.members.map((member) => {
+        if (member.name == currentUser.name) {
+          member.pfp = link
+        }
+        return member
+      })
+      updateMembers(newMembers)
+      const newMessages = currentChannel.messages.map((message) => {
+        if (message.author.name == currentUser.name) {
+          message.author.pfp = link
+        }
+        return message
+      })
+      updateMessages(newMessages)
     })
-    updateMembers(newMembers)
-    const newMessages = currentChannel.messages.map((message) => {
-      if (message.author.name == currentUser.name) {
-        message.author.pfp = link
-      }
-      return message
-    })
-    updateMessages(newMessages)
   }
 
   const updateBioFunc = async (bio) => {
-    // console.log("updating bio...")
     setShowSettingsModal(false)
     try {
-        // console.log(currentUser.name)
-        // console.log(bio)
-        console.log(await contract.updateBio(currentUser.name, bio))
-        updateBio(bio)
-        // console.log('Bio updated successfully!')
+        contract.updateBio(currentUser.name, bio).then((result) => {
+          updateBio(bio)
+        })
     } catch (error) {
       console.log(error)
         console.log('Error updating bio...');
@@ -97,7 +98,8 @@ if (showSettingsModal) {
       <Flex position={'absolute'} w='100%' h='100%' bg='black' backdropBlur={'100%'} blur={'100%'} opacity={'60%'} onClick={() => setShowSettingsModal(false)}></Flex>
       <Flex zIndex={1} align={'center'}  direction='column' margin={'0 auto'} w='420px' h='520px' borderRadius={'10px'} bg='#313131'>
       <Flex justify={'center'} mb='10px' mt='25px' w='60%' h='20px'>
-          <Button>          <Input
+          <Button isLoading={loading}>
+            <Input
               id='imgupld'
               type="file"
               onChange={fileUploadHandler}
@@ -107,7 +109,9 @@ if (showSettingsModal) {
               aria-hidden="true"
               accept="image/*"
               opacity="0"
-            />Change Profile Picture</Button>
+            />
+              Change Profile Picture
+            </Button>
         </Flex>
         <Avatar ml={'3px'} mt='30px' w={'120px'} h={'120px'} src={currentUser.pfp} />
         <Button bg='transparent' borderRadius={'50%'} position={'absolute'} ml='350px' mt='20px' w={'15px'}  onClick={() => setShowSettingsModal(false)}><Image position={'absolute'} w='40%' src={'https://i.ibb.co/b7wxVvt/x.png'}></Image></Button>        

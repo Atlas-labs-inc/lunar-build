@@ -13,9 +13,10 @@ import {
   
   interface MessagesProps {
     messages: Message[]
+    scrollToBottom: () => void
   }
   
-  export const Messages = ({ messages }: MessagesProps) => {
+  export const Messages = ({ messages, scrollToBottom }: MessagesProps) => {
     const currentChannel = useStore((state) => state.currentChannel)
     const [showButtons, setShowButtons] = useState('0rem')
     const [hoveredMessage, setHoveredMessage] = useState('')
@@ -27,19 +28,15 @@ import {
     const currentUser = useStore((state) => state.currentUser)
     const messagesEndRef = useRef(null)
 
-    const scrollToBottom = () => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-    }
-
     useEffect(() => {
       if (currentUser) {
 
         channelManager.on('MessageEvent', (channel, message) => {
+          console.log('message event firing')
           console.log(message.username)
           console.log(currentUser.name)
           if (message.username === currentUser.name) return
           if (channel === currentChannel.name) {
-            console.log('message event firing')
             // console.log(currentChannel.messages)
             const userDetails = server.members.find((member) => member.name === message.username)
             const newMessage = {
@@ -68,7 +65,6 @@ import {
   
     // TODO: add reply functionality
     const messageList = messages.map((message) => {
-      console.log(message)
       const { id, author, content, timestamp } = message
       const date = new Date(parseInt(timestamp) * 1000)
       const day = date.toLocaleDateString() === new Date().toLocaleDateString() ? 'Today' : date.toLocaleDateString()
@@ -79,7 +75,6 @@ import {
       let reply
       if (message.replyTo !== '0') {
         const replyMsg = messages.find((m) => m.id === message.replyTo)
-        console.log(replyMsg)
         reply = (
           <Flex ml='3.5rem' align='center' mb='.5rem'>
             <Avatar size={'xs'} src={replyMsg?.author.pfp} />

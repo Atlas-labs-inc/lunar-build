@@ -13,6 +13,7 @@ import { useStore } from '../store'
     const server = useStore((state) => state.server)
     const currentChannel = useStore((state) => state.currentChannel)
     const setCurrentChannel = useStore((state) => state.setCurrentChannel)
+    const setReplyId = useStore((state) => state.setReplyId)
 
     const currentUser = useStore((state) => state.currentUser)
     const showCreateChannel = useStore((state) => state.showCreateChannel)
@@ -26,6 +27,7 @@ import { useStore } from '../store'
     if (server) {
 
     const getChannelInfo = (channelName: string) => {
+      setReplyId('0')
       setClickedChannel(channelName)
       setLoadingMessages(true)
       channelManager.getMessagesPaginated(channelName, 0, 100).then((messages) => {

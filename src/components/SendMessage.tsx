@@ -23,6 +23,14 @@ import {
     const replyId = useStore((state) => state.replyId)
     const setReplyId = useStore((state) => state.setReplyId)
     const addMessage = useStore((state) => state.addMessage)
+
+    const sendMessageRef = useRef(null)
+
+    useEffect(() => {
+      if (replyId !== '0') {
+        sendMessageRef.current.focus()
+      }
+    }, [replyId])
     
     const sendNotificationToUser = async (respond_user, message_contract, profile_contract, channel, message_id: string, message_value: string) => {
       const replied_message = await message_contract.getMessage(channel, message_id);
@@ -101,11 +109,12 @@ import {
       <Flex w='95%' mb='2rem' mt='1rem' mx='1.5rem' bg='#292A2E' align='center' direction={'column'}>
         {replyDialog}
         <Input
+          ref={sendMessageRef}
           h='55px'
           value={message}
           bg='#393A3E'
           variant='filled'
-          placeholder='Hello EthGlobal...'
+          placeholder='Hello Lunar...'
           color='#fff'
           onChange={(e) => setMessage(e.target.value)}
           _hover={{
