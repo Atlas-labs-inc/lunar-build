@@ -32,9 +32,9 @@ import {
       if (currentUser) {
 
         channelManager.on('MessageEvent', (channel, message) => {
-          console.log('message event firing')
-          console.log(message.username)
-          console.log(currentUser.name)
+          // console.log('message event firing')
+          // console.log(message.username)
+          // console.log(currentUser.name)
           if (message.username === currentUser.name) return
           if (channel === currentChannel.name) {
             // console.log(currentChannel.messages)
