@@ -56,7 +56,8 @@ export const SettingsModal = () => {
     const cid = await store.storeDirectory(event.target.files)
     const name = event.target.files[0].name;
     const link = `https://${cid}.ipfs.nftstorage.link/${name}`
-    contract.updateProfilePicture(currentUser.name, link).then((result) => {
+    const request = await contract.updateProfilePicture(currentUser.name, link)
+    request.wait().then((result) => {
       console.log("File Uploaded to IPFS...")
 
       updatePfp(link)
@@ -82,7 +83,8 @@ export const SettingsModal = () => {
   const updateBioFunc = async (bio) => {
     setShowSettingsModal(false)
     try {
-        contract.updateBio(currentUser.name, bio).then((result) => {
+        const request = await contract.updateBio(currentUser.name, bio)
+        request.wait().then((result) => {
           updateBio(bio)
         })
     } catch (error) {

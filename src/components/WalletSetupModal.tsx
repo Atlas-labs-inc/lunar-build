@@ -28,13 +28,15 @@ export const WalletSetupModal = () => {
   const setOPAddress = useStore((state) => state.setOPAddress)
   const wasConnected = useStore((state) => state.wasConnected)
   const { addChain } = useMetaMask();
-  const [chainAdded, setChainAdded] = useState(false)
   const setSigner = useStore((state) => state.setSigner)
   const setOperatorSigner = useStore((state) => state.setOperatorSigner)
   const { status, connect, account, chainId, ethereum } = useMetaMask();
   const [loading, setLoading] = useState(false)
   const fundOperator = useStore((state) => state.fundOperator)
   const setFundOperator = useStore((state) => state.setFundOperator)
+  const [operatorFunded, setOperatorFunded] = useState(false)
+  const [metamaskFunded, setMetamaskFunded] = useState(false)
+  const [executed, setExecuted] = useState(false)
 
   const ChainNetworkParams = {
     chainId: "0x10E",
@@ -58,90 +60,80 @@ export const WalletSetupModal = () => {
     )
   }
 
-  const checkBalance = async (privateKey) => {
-    const provider = new Provider(process.env.NEXT_PUBLIC_Pl2)
-    const operatorWallet = new Wallet(privateKey, provider, new ethers.providers.JsonRpcProvider(process.env.PL1));
-    const operatorBalance = await operatorWallet.getBalance()
-    const userBalance = await provider.getBalance(account)
-    const signer = await (new Web3Provider(ethereum)).getSigner();
+  const loadWallets = async () => {
+    if (cookies.get('operatorKey') === undefined) {
+      cookies.set('operatorKey', "0x"+crypto.randomBytes(32).toString('hex'), { path: '/' })
+    }
+    const privateKey = cookies.get('operatorKey')
 
-    setSigner(signer)
+    const provider = new Provider(process.env.NEXT_PUBLIC_Pl2)
+    provider.getBalance(account).then((balance) => {
+      console.log("metamask balance: ", balance.toString())
+      if (balance.lt(ethers.utils.parseEther("0.01"))) {   //Check if Metsmask has at least 0.01 ETH
+        console.log("(Metamask) requesting funds... " + account)
+        fundWallet(account).then(val => {
+          provider.getBalance(account).then(val => {
+            console.log("Metamask Balance after funding: " + val)
+          })
+          setMetamaskFunded(true)
+        })    
+      } else{
+          setMetamaskFunded(true)
+          console.log("Metamask wallet above 0.01 ETH ")  
+      }
+    })
+    
+    const operatorWallet = new Wallet(privateKey, provider, new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_Pl2));
     setOperatorSigner(operatorWallet)
     setOPAddress(operatorWallet.address)
+    const signer = new Web3Provider(ethereum).getSigner();
+    setSigner(signer)
 
-    console.log("Operator Balance: " + operatorBalance)
-    console.log("User Balance: " + userBalance)
-
-    if (userBalance.lt(ethers.utils.parseEther("0.01"))) {   //Check if Metsmask has at least 0.01 ETH
-      console.log("(Metamask) requesting funds... " + account)
-      await fundWallet(account).then(val => {
-        provider.getBalance(account).then(val => {
-          console.log("Metamask Balance: " + val)
+    operatorWallet.getBalance().then((balance) => {
+      console.log('operator balance: ', balance.toString())
+      if (balance.lt(ethers.utils.parseEther("0.01"))) {   //Check if operator has at least 0.01 ETH
+        console.log("(Operator) requesting funds... " + operatorWallet.address)
+        fundWallet(operatorWallet.address).then(val => {
+          operatorWallet.getBalance().then(val => {
+            console.log("Operator Balance after funding: " + val)
+          })
+          setOperatorFunded(true)
         })
-      })    
-    } else{
-        console.log(account + " - Metamask wallet above 0.01 ETH ")
-        setShowModal1(false)    
-    }
-
-    if (operatorBalance.lt(ethers.utils.parseEther("0.01"))) {   //Check if operator has at least 0.01 ETH
-      console.log("(Operator) requesting funds... " + operatorWallet.address)
-      fundWallet(operatorWallet.address).then(val => {
-        operatorWallet.getBalance().then(val => {
-          console.log("Operator Balance: " + val)
-          setShowModal1(false)
-        })
-      })
-    } else{
-      console.log(operatorWallet.address +" - Operator wallet above 0.01 ETH")
-      setShowModal1(false)
-    }
-    
-
-    return true
-  }
-
-  const fundWallet = async (walletAddress) => {
-    return await axios.post('/api/fund', {main_address: walletAddress})
-  }
-
-
-  const startBalanceCheck = async () => {
-
-      if (cookies.get('operatorKey') === undefined) {
-        cookies.set('operatorKey', "0x"+crypto.randomBytes(32).toString('hex'), { path: '/' })
+      } else{
+        setOperatorFunded(true)
+        console.log("Operator wallet above 0.01 ETH")
       }
-      checkBalance(cookies.get('operatorKey'))
-  }
-
-  if(fundOperator){
-    startBalanceCheck().then(val => {
-      console.log("Funding new operator!")
-      setFundOperator(false)
     })
+
+
+    setExecuted(true)
   }
 
-  const walletConnected = async () => {
-    setLoading(false)
+  const fundWallet = (walletAddress) => {
+    return axios.post('/api/fund', {main_address: walletAddress})
+  }
+  
+  useEffect(() => {
     if (status === 'connected') { //wallet connected
-      console.log("Metamask Connected")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-      startBalanceCheck().then(val => {
-        setLoading(true)
+      // console.log(operatorFunded)
+      // console.log(metamaskFunded)
+      if (operatorFunded && metamaskFunded) {
+        setShowModal1(false)
         if (currentUser.name === null || currentUser.name === undefined) { //user has not set username
           setShowSetUsernameModal(true)
         }
-      })
-
+      } else {
+        setLoading(true)
+        if (!executed) {
+          console.log("Metamask Connected")
+          loadWallets()
+        }
+      }
     } else {
+      setLoading(false)
       setShowModal1(true) //show connect wallet button if they arent connected
     }
-  }
-
-  
-  useEffect(() => {
-    walletConnected() 
-  }, [status])
-
+  }, [status, operatorFunded, metamaskFunded])
 
 
 if (showModal1) {

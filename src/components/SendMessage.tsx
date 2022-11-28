@@ -23,6 +23,7 @@ import {
     const replyId = useStore((state) => state.replyId)
     const setReplyId = useStore((state) => state.setReplyId)
     const addMessage = useStore((state) => state.addMessage)
+    const operatorSigner = useStore((state) => state.operatorSigner)
 
     const sendMessageRef = useRef(null)
 
@@ -43,11 +44,12 @@ import {
     }
 
     const sendMessageToChain = (message: string) => {
-      const wallet = new Wallet(
-        cookies.get('operatorKey'),
-        new Provider(process.env.NEXT_PUBLIC_Pl2),
-        new ethers.providers.JsonRpcProvider(process.env.PL1)
-      );
+      // const wallet = new Wallet(
+      //   cookies.get('operatorKey'),
+      //   new Provider(process.env.NEXT_PUBLIC_Pl2),
+      //   new ethers.providers.JsonRpcProvider((process.env.NEXT_PUBLIC_Pl2)
+      // );
+      const wallet = operatorSigner
       const contract = new Contract(
         process.env.NEXT_PUBLIC_CHANNEL_MANAGER_CONTRACT,
         channelManagerABI,

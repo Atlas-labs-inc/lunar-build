@@ -16,6 +16,7 @@ import { useMetaMask } from 'metamask-react'
 import profileABI from '../abis/profile.json'
 import cookies from '../cookies';
 import { WalletSetupModal } from './WalletSetupModal';
+import { request } from 'https';
 
 export const SetUsernameModal = () => {
   const showSetUsernameModal = useStore((state) => state.showSetUsernameModal)
@@ -60,12 +61,13 @@ export const SetUsernameModal = () => {
   const createAccount = async (username) => {
     console.log('creating account...')
     setLoading(true)
-    contract.newUser({
+    const request = await contract.newUser({
       username: username,
       pfp_link: "https://avatars.githubusercontent.com/u/35270686?s=280&v=4",
       operator_wallet: opWallet.address,
       bio: "I'm a new user!",
-    }).then(receipt => {
+    })
+    request.wait().then(receipt => {
         setCurrentUser({
           name: username,
           pfp: "https://avatars.githubusercontent.com/u/35270686?s=280&v=4",
