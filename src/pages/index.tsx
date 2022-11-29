@@ -17,6 +17,7 @@ import { ProfileModal } from '../components/ProfileModal';
 import { ForceDarkMode } from '../components/ForceDarkMode'
 import { MetaMaskProvider } from "metamask-react";
 import { useMetaMask } from "metamask-react";
+import Script from 'next/script'
 
 const Home = () => {
   const provider = useStore((state) => state.provider);
@@ -102,10 +103,32 @@ const Home = () => {
       }
     }, [])
 
+    const analytics = (
+      <div>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-QQQN8XTE6C"
+          strategy='afterInteractive'
+        />
+        <Script
+          id="analytics"
+          strategy='afterInteractive'
+        >
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-QQQN8XTE6C');
+          `}
+        </Script>
+      </div>
+    )
+
     return (
       <MetaMaskProvider>
         <ForceDarkMode>
           <Container>
+            {analytics}
             <WalletSetupModal/>
             <CreateChannelModal/>
             <SettingsModal/>
